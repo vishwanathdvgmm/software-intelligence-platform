@@ -5,7 +5,6 @@ from uuid import UUID
 
 from sip.core.contracts.rag import RetrievalCandidate, RetrievalPlan, RetrievalResult
 
-
 class RRFFusion:
     """Reciprocal Rank Fusion."""
 

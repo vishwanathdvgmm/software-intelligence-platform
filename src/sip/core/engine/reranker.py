@@ -2,7 +2,6 @@
 
 from sip.core.contracts.rag import Evidence, Query, RetrievalPlan, RetrievalResult
 
-
 class CrossEncoderReranker:
     """Reranks candidates using a sentence-transformers CrossEncoder."""
 
@@ -43,7 +42,7 @@ class CrossEncoderReranker:
 
         # Real cross-encoder scoring
         query_text = query.text
-        pairs = [[query_text, cand.knowledge_record.chunk.text] for cand in candidates]
+        pairs = [(query_text, cand.knowledge_record.chunk.text) for cand in candidates]
 
         scores = self.model.predict(pairs)
 

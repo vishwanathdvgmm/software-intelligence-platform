@@ -13,7 +13,6 @@ from sip.core.contracts.rag import (
 from sip.observability.tracer import PipelineTracer
 from sip.observability.metrics import MetricsCollector, get_metrics_collector
 
-
 async def main() -> None:
     configure_logging(force=True)
     
@@ -120,7 +119,6 @@ async def main() -> None:
     print("\n" + "=" * 60)
     print("  ✅ Observability architecture verified!")
     print("=" * 60)
-
 
 if __name__ == "__main__":
     asyncio.run(main())

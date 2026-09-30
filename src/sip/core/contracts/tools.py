@@ -21,7 +21,6 @@ from sip.core.contracts.base import SIPBaseModel, new_uuid, utc_now
 
 # ─── Enumerations ──────────────────────────────────────────────────────────
 
-
 class ToolPermission(StrEnum):
     """Permissions a tool may require.
 
@@ -37,7 +36,6 @@ class ToolPermission(StrEnum):
     NETWORK_READ = "network_read"  # HTTP GET to allowlisted URLs
     SYSTEM_READ = "system_read"  # Read system metrics/health
 
-
 class ToolStatus(StrEnum):
     """Result status of a tool execution."""
 
@@ -48,7 +46,6 @@ class ToolStatus(StrEnum):
     INPUT_INVALID = "input_invalid"
     OUTPUT_INVALID = "output_invalid"
 
-
 class AgentStatus(StrEnum):
     """Final status of an agent execution."""
 
@@ -57,9 +54,7 @@ class AgentStatus(StrEnum):
     BUDGET_EXCEEDED = "budget_exceeded"
     ERROR = "error"
 
-
 # ─── Tool contracts ─────────────────────────────────────────────────────────
-
 
 class Tool(SIPBaseModel):
     """Definition of a registered tool.
@@ -80,7 +75,6 @@ class Tool(SIPBaseModel):
     required_permissions: frozenset[ToolPermission] = Field(default_factory=frozenset)
     is_active: bool = True
 
-
 class ToolCall(SIPBaseModel):
     """A tool call requested by the LLM."""
 
@@ -88,7 +82,6 @@ class ToolCall(SIPBaseModel):
     tool_id: str
     # Raw input as provided by the LLM (pre-validation)
     raw_input: dict[str, object] = Field(default_factory=dict)
-
 
 class ToolResult(SIPBaseModel):
     """Result of a single tool execution."""
@@ -103,9 +96,7 @@ class ToolResult(SIPBaseModel):
     latency_ms: float | None = None
     executed_at: datetime = Field(default_factory=utc_now)
 
-
 # ─── Agent execution ─────────────────────────────────────────────────────────
-
 
 class AgentExecution(SIPBaseModel):
     """Context and result of a bounded agent run.

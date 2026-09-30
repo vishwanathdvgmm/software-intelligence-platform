@@ -12,7 +12,6 @@ except ImportError:
 from sip.core.contracts.knowledge import KnowledgeRecord
 from sip.core.protocols.retrieval import LexicalRetriever, SemanticRetriever
 
-
 class MockSemanticRetriever(SemanticRetriever):
     """In-memory vector similarity for testing."""
 
@@ -34,7 +33,6 @@ class MockSemanticRetriever(SemanticRetriever):
             # Mock score: 1.0 - 0.1 * i
             results.append((record, max(0.1, 1.0 - (0.1 * i))))
         return results
-
 
 class BM25SRetriever(LexicalRetriever):
     """BM25S library integration."""

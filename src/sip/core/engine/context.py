@@ -4,7 +4,6 @@ import time
 
 from sip.core.contracts.rag import Context, Evidence, Query
 
-
 class ContextOptimizer:
     """Optimizes evidence into a final context string for the LLM."""
 

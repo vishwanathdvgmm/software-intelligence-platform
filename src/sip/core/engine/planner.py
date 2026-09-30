@@ -8,7 +8,6 @@ from sip.core.contracts.rag import (
     RetrievalVersionSnapshot,
 )
 
-
 class RetrievalPlanner:
     """Plans the retrieval strategy based on query analysis."""
 

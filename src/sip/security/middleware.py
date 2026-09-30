@@ -31,7 +31,6 @@ PUBLIC_ENDPOINTS = {
     "/api/knowledge/stats",
 }
 
-
 class SecurityMiddleware(BaseHTTPMiddleware):
     """FastAPI Middleware for Rate Limiting and Authentication."""
 

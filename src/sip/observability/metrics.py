@@ -30,7 +30,6 @@ from sip.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-
 @dataclass
 class _LatencyHistogram:
     """Simple in-memory latency histogram (stores raw values)."""
@@ -72,7 +71,6 @@ class _LatencyHistogram:
             "p95_ms": round(self.p95, 2),
             "p99_ms": round(self.p99, 2),
         }
-
 
 class MetricsCollector:
     """Singleton-style in-process metrics collector.
@@ -188,11 +186,9 @@ class MetricsCollector:
             self._retrieval_queries = 0
             self._started_at = time.time()
 
-
 # ── Module-level singleton ──────────────────────────────────────────────────
 
 _collector: MetricsCollector | None = None
-
 
 def get_metrics_collector() -> MetricsCollector:
     """Return the global metrics collector (lazy singleton)."""

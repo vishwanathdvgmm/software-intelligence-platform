@@ -30,7 +30,6 @@ from sip.core.contracts.base import SIPBaseModel, new_uuid, utc_now
 
 # ─── Enumerations ──────────────────────────────────────────────────────────
 
-
 class SourceType(StrEnum):
     """Where a knowledge source originates."""
 
@@ -43,7 +42,6 @@ class SourceType(StrEnum):
     BLOG = "blog"
     RFC = "rfc"
     OTHER = "other"
-
 
 class AuthorityLevel(StrEnum):
     """Trust / authority of a source.
@@ -64,7 +62,6 @@ class AuthorityLevel(StrEnum):
             AuthorityLevel.AUTO_GENERATED: 0.3,
         }[self]
 
-
 class DocumentType(StrEnum):
     """Semantic type of a document."""
 
@@ -77,7 +74,6 @@ class DocumentType(StrEnum):
     DISCUSSION = "discussion"
     OTHER = "other"
 
-
 class ChunkType(StrEnum):
     """Content type of a chunk."""
 
@@ -86,7 +82,6 @@ class ChunkType(StrEnum):
     TABLE = "table"
     HEADING = "heading"
     MIXED = "mixed"
-
 
 class IngestionStatus(StrEnum):
     """Status of an ingestion run."""
@@ -97,9 +92,7 @@ class IngestionStatus(StrEnum):
     FAILED = "failed"
     PARTIAL = "partial"
 
-
 # ─── Knowledge entities ─────────────────────────────────────────────────────
-
 
 class Software(SIPBaseModel):
     """A software product that an Expert can be trained on.
@@ -119,7 +112,6 @@ class Software(SIPBaseModel):
     def slug_lowercase(cls, v: str) -> str:
         return v.lower()
 
-
 class SoftwareVersion(SIPBaseModel):
     """A specific version of a Software product.
 
@@ -138,7 +130,6 @@ class SoftwareVersion(SIPBaseModel):
     is_latest: bool = False
     release_date: datetime | None = None
     created_at: datetime = Field(default_factory=utc_now)
-
 
 class Source(SIPBaseModel):
     """A knowledge source — a URL root or repository that can be crawled.
@@ -162,7 +153,6 @@ class Source(SIPBaseModel):
     created_at: datetime = Field(default_factory=utc_now)
     last_crawled_at: datetime | None = None
 
-
 class Document(SIPBaseModel):
     """A logical document within a Source.
 
@@ -179,7 +169,6 @@ class Document(SIPBaseModel):
     title: str = Field(default="")
     language: str = Field(default="en")
     created_at: datetime = Field(default_factory=utc_now)
-
 
 class DocumentVersion(SIPBaseModel):
     """A snapshot of a Document's content at a point in time.
@@ -199,7 +188,6 @@ class DocumentVersion(SIPBaseModel):
     is_current: bool = True
     ingestion_run_id: UUID | None = None
 
-
 class Section(SIPBaseModel):
     """A structural section within a DocumentVersion.
 
@@ -214,7 +202,6 @@ class Section(SIPBaseModel):
     heading_level: int = Field(default=1, ge=1, le=6)
     # Position within the document (0-indexed)
     position: int = Field(..., ge=0)
-
 
 class Chunk(SIPBaseModel):
     """The atomic unit of retrieval in the RAG pipeline.
@@ -258,7 +245,6 @@ class Chunk(SIPBaseModel):
     document_type: DocumentType = DocumentType.OTHER
     language: str = Field(default="en")
     created_at: datetime = Field(default_factory=utc_now)
-
 
 class KnowledgeRecord(SIPBaseModel):
     """Flattened provenance bundle for a single retrieved Chunk.

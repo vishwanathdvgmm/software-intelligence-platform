@@ -14,9 +14,7 @@ from sip.core.contracts.experts import (
 )
 from sip.experts.service import ExpertLifecycleService
 
-
 # ─── In-memory mock repositories ────────────────────────────────────────────
-
 
 class InMemoryExpertRepo:
     """In-memory Expert repository for testing."""
@@ -38,7 +36,6 @@ class InMemoryExpertRepo:
 
     async def list_active(self) -> list[Expert]:
         return [e for e in self._store.values() if e.status == ExpertStatus.ACTIVE]
-
 
 class InMemoryVersionRepo:
     """In-memory ExpertVersion repository for testing."""
@@ -62,9 +59,7 @@ class InMemoryVersionRepo:
             reverse=True,
         )
 
-
 # ─── Interactive test ────────────────────────────────────────────────────────
-
 
 def print_expert(expert: Expert) -> None:
     """Pretty-print an Expert."""
@@ -79,7 +74,6 @@ def print_expert(expert: Expert) -> None:
     print(f"  LLM Model:      {expert.config.generation.llm_model or '(system default)'}")
     print(f"  Created:        {expert.created_at}")
     print(f"  Updated:        {expert.updated_at}")
-
 
 async def main() -> None:
     print("=" * 60)
@@ -189,7 +183,6 @@ async def main() -> None:
     print("\n" + "=" * 60)
     print("All Expert Lifecycle tests passed! [OK]")
     print("=" * 60)
-
 
 if __name__ == "__main__":
     asyncio.run(main())

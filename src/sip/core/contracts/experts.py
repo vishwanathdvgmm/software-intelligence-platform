@@ -28,7 +28,6 @@ from sip.core.contracts.rag import RetrievalStrategy
 
 # ─── Enumerations ──────────────────────────────────────────────────────────
 
-
 class ExpertStatus(StrEnum):
     """Full lifecycle state of an Expert.
 
@@ -54,7 +53,6 @@ class ExpertStatus(StrEnum):
     DISABLED = "disabled"
     ARCHIVED = "archived"
 
-
 # Valid state transitions (enforced by the Expert service, not the model)
 EXPERT_VALID_TRANSITIONS: dict[ExpertStatus, frozenset[ExpertStatus]] = {
     ExpertStatus.DRAFT: frozenset({ExpertStatus.CONFIGURING}),
@@ -68,7 +66,6 @@ EXPERT_VALID_TRANSITIONS: dict[ExpertStatus, frozenset[ExpertStatus]] = {
     ExpertStatus.ARCHIVED: frozenset(),  # terminal
 }
 
-
 class VersionPolicy(StrEnum):
     """How the Expert handles software version scope."""
 
@@ -77,9 +74,7 @@ class VersionPolicy(StrEnum):
     RANGE = "range"  # Retrieve from a version range
     ALL_VERSIONS = "all_versions"  # Retrieve across all versions (with metadata)
 
-
 # ─── Expert sub-configs ─────────────────────────────────────────────────────
-
 
 class RetrievalConfig(SIPBaseModel):
     """Retrieval parameters for an Expert.
@@ -99,7 +94,6 @@ class RetrievalConfig(SIPBaseModel):
     reranker_model: str | None = None
     reranker_model_version: str | None = None
 
-
 class GenerationConfig(SIPBaseModel):
     """LLM generation parameters for an Expert.
 
@@ -113,7 +107,6 @@ class GenerationConfig(SIPBaseModel):
     max_output_tokens: int = Field(default=2048, ge=1)
     # System prompt template for this expert (supports {expert_name} interpolation)
     system_prompt_template: str = Field(default="")
-
 
 class EvidenceConfig(SIPBaseModel):
     """Evidence Gate configuration for an Expert.
@@ -132,7 +125,6 @@ class EvidenceConfig(SIPBaseModel):
     enable_abstention: bool = True
     # Whether to flag VERSION_MISMATCH when evidence is from wrong version
     enable_version_mismatch_detection: bool = True
-
 
 class ExpertConfig(SIPBaseModel):
     """Complete configuration for an Expert.
@@ -158,9 +150,7 @@ class ExpertConfig(SIPBaseModel):
         # since frozen models cannot access other fields in validators cleanly.
         return v
 
-
 # ─── Expert entity ──────────────────────────────────────────────────────────
-
 
 class Expert(SIPBaseModel):
     """An Expert entity — the core product unit of SIP.
@@ -190,7 +180,6 @@ class Expert(SIPBaseModel):
     def is_queryable(self) -> bool:
         """Return True if this Expert can accept queries."""
         return self.status == ExpertStatus.ACTIVE
-
 
 class ExpertVersion(SIPBaseModel):
     """Immutable snapshot of an Expert's config at a point in time.

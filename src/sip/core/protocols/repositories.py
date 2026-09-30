@@ -8,7 +8,6 @@ from uuid import UUID
 
 from sip.core.contracts import Expert, ExpertVersion
 
-
 class ExpertRepository(Protocol):
     """Protocol for managing Expert entities."""
 
@@ -27,7 +26,6 @@ class ExpertRepository(Protocol):
     async def list_active(self) -> list[Expert]:
         """List all Experts in the ACTIVE state."""
         ...
-
 
 class ExpertVersionRepository(Protocol):
     """Protocol for managing Expert config snapshots."""

@@ -13,12 +13,10 @@ from sip.ingestion.pipeline import BasicSourceAdapter
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
-
 class MockEmbedder(Embedder):
     async def embed(self, texts: list[str]) -> list[list[float]]:
         # Return dummy embeddings of dimension 3
         return [[0.1, 0.2, 0.3] for _ in texts]
-
 
 class MockIndexer(Indexer):
     async def index(self, chunks: list[Chunk], embeddings: list[list[float]]) -> None:
@@ -31,7 +29,6 @@ class MockIndexer(Indexer):
             print(f"  Content Preview: {chunk.text[:100]}...\n")
         if len(chunks) > 2:
             print(f"... and {len(chunks) - 2} more chunks.\n")
-
 
 async def main() -> None:
     print("Initializing components...")

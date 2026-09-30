@@ -16,7 +16,6 @@ from sip.core.protocols.ingestion import (
 
 logger = logging.getLogger(__name__)
 
-
 class BasicSourceAdapter(SourceAdapter):
     """A basic generic source adapter that fetches and indexes a single URL as a Document."""
 

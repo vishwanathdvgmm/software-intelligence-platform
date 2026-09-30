@@ -18,7 +18,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # ─── Base model ────────────────────────────────────────────────────────────
 
-
 class SIPBaseModel(BaseModel):
     """Base for all SIP data contracts.
 
@@ -35,19 +34,15 @@ class SIPBaseModel(BaseModel):
         use_enum_values=False,
     )
 
-
 # ─── Common field factories ─────────────────────────────────────────────────
-
 
 def new_uuid() -> UUID:
     """Generate a new random UUID v4."""
     return uuid4()
 
-
 def utc_now() -> datetime:
     """Return the current UTC time (timezone-aware)."""
     return datetime.now(UTC)
-
 
 # ─── Common field types ─────────────────────────────────────────────────────
 

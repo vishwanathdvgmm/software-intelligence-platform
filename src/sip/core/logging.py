@@ -44,7 +44,6 @@ from sip.core.config import LogFormat, get_settings
 # Module-level flag so configure() is idempotent.
 _configured: bool = False
 
-
 def configure_logging(*, force: bool = False) -> None:
     """Configure structlog and stdlib logging.
 
@@ -113,7 +112,6 @@ def configure_logging(*, force: bool = False) -> None:
 
     _configured = True
 
-
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:
     """Return a structlog bound logger for the given module name.
 
@@ -124,9 +122,7 @@ def get_logger(name: str) -> structlog.stdlib.BoundLogger:
         configure_logging()
     return cast(structlog.stdlib.BoundLogger, structlog.get_logger(name))
 
-
 # ─── Context variable helpers ───────────────────────────────────────────────
-
 
 def bind_request_context(**kwargs: object) -> None:
     """Bind key-value pairs to the current async context.
@@ -141,14 +137,12 @@ def bind_request_context(**kwargs: object) -> None:
     """
     structlog.contextvars.bind_contextvars(**kwargs)
 
-
 def clear_request_context() -> None:
     """Clear all context variables for the current async task.
 
     Call at the end of a request or in test teardown.
     """
     structlog.contextvars.clear_contextvars()
-
 
 def unbind_request_context(*keys: str) -> None:
     """Remove specific keys from the current async context."""

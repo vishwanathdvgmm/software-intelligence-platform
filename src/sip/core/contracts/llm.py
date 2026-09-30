@@ -20,7 +20,6 @@ from sip.core.contracts.base import SIPBaseModel, new_uuid, utc_now
 
 # ─── Enumerations ──────────────────────────────────────────────────────────
 
-
 class MessageRole(StrEnum):
     """Role of a message in a conversation."""
 
@@ -29,7 +28,6 @@ class MessageRole(StrEnum):
     ASSISTANT = "assistant"
     TOOL = "tool"
 
-
 class LLMProvider(StrEnum):
     """Supported LLM providers."""
 
@@ -37,7 +35,6 @@ class LLMProvider(StrEnum):
     OPENAI = "openai"
     GEMINI = "gemini"
     ANTHROPIC = "anthropic"
-
 
 class FinishReason(StrEnum):
     """Why the LLM stopped generating."""
@@ -48,9 +45,7 @@ class FinishReason(StrEnum):
     CONTENT_FILTER = "content_filter"  # Blocked by safety filter
     ERROR = "error"  # Provider error
 
-
 # ─── Message and request/response ─────────────────────────────────────────
-
 
 class Message(SIPBaseModel):
     """A single message in a conversation."""
@@ -60,7 +55,6 @@ class Message(SIPBaseModel):
     # Tool call ID (populated when role=TOOL, referencing the tool call)
     tool_call_id: str | None = None
 
-
 class TokenUsage(SIPBaseModel):
     """Token consumption for a single LLM call."""
 
@@ -69,7 +63,6 @@ class TokenUsage(SIPBaseModel):
     total_tokens: int = Field(..., ge=0)
     # Cached input tokens (OpenAI prompt caching, if supported)
     cached_input_tokens: int = Field(default=0, ge=0)
-
 
 class ModelProfile(SIPBaseModel):
     """Configuration profile for a specific model.
@@ -92,7 +85,6 @@ class ModelProfile(SIPBaseModel):
     # Provider base URL (required for Ollama, optional for cloud providers)
     base_url: str | None = None
 
-
 class LLMRequest(SIPBaseModel):
     """Provider-agnostic LLM generation request."""
 
@@ -108,7 +100,6 @@ class LLMRequest(SIPBaseModel):
     query_id: UUID | None = None
     expert_id: UUID | None = None
     created_at: datetime = Field(default_factory=utc_now)
-
 
 class LLMResponse(SIPBaseModel):
     """Provider-agnostic LLM generation response."""

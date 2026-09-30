@@ -5,7 +5,6 @@ from typing import Protocol
 
 from sip.core.contracts import Chunk, Document, DocumentVersion, Source
 
-
 class RawArtifact(Protocol):
     """Raw artifact retrieved from a Source."""
 
@@ -14,7 +13,6 @@ class RawArtifact(Protocol):
     content_type: str
     status_code: int
 
-
 class Fetcher(Protocol):
     """Protocol for fetching resources from the web or APIs."""
 
@@ -22,14 +20,12 @@ class Fetcher(Protocol):
         """Fetch a single URL."""
         ...
 
-
 class Parser(Protocol):
     """Protocol for parsing RawArtifacts into clean text/structure."""
 
     async def parse(self, artifact: RawArtifact) -> str:
         """Parse raw content into normalized text/Markdown."""
         ...
-
 
 class Chunker(Protocol):
     """Protocol for chunking normalized text."""
@@ -40,14 +36,12 @@ class Chunker(Protocol):
         """Split text into semantic Chunks."""
         ...
 
-
 class Embedder(Protocol):
     """Protocol for embedding text."""
 
     async def embed(self, texts: list[str]) -> list[list[float]]:
         """Embed a batch of strings into vectors."""
         ...
-
 
 class Indexer(Protocol):
     """Protocol for persisting Chunks and their embeddings."""
@@ -59,7 +53,6 @@ class Indexer(Protocol):
     ) -> None:
         """Store chunks in PostgreSQL and Qdrant."""
         ...
-
 
 class SourceAdapter(Protocol):
     """Protocol for orchestrating ingestion for a specific Source."""

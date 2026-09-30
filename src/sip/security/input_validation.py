@@ -41,9 +41,7 @@ _INJECTION_PATTERNS = [
     r"(?i)disregard\s+(all\s+)?instructions",
 ]
 
-
 # ─── Query Validation ──────────────────────────────────────────────────────
-
 
 def sanitize_query(query: str) -> str:
     """Validate and sanitize a user query.
@@ -68,7 +66,6 @@ def sanitize_query(query: str) -> str:
 
     return query
 
-
 def detect_prompt_injection(text: str) -> bool:
     """Check if text contains common prompt injection patterns.
 
@@ -85,9 +82,7 @@ def detect_prompt_injection(text: str) -> bool:
             return True
     return False
 
-
 # ─── File Path Validation (§10.15) ─────────────────────────────────────────
-
 
 def validate_file_path(
     user_path: str,
@@ -114,9 +109,7 @@ def validate_file_path(
 
     return requested
 
-
 # ─── File Upload Validation (§10.14) ───────────────────────────────────────
-
 
 def _sanitize_filename(filename: str) -> str:
     """Remove dangerous characters from a filename."""
@@ -128,7 +121,6 @@ def _sanitize_filename(filename: str) -> str:
     # Prevent hidden files
     filename = filename.lstrip(".")
     return filename or "unnamed_file"
-
 
 def validate_file_upload(
     filename: str,

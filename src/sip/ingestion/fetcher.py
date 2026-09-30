@@ -4,7 +4,6 @@ import httpx
 
 from sip.core.protocols.ingestion import Fetcher, RawArtifact
 
-
 class HttpxFetcher(Fetcher):
     """Fetcher implementation using httpx for HTTP requests."""
 

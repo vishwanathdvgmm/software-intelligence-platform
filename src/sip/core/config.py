@@ -25,17 +25,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # ─── Enums ─────────────────────────────────────────────────────────────────
 
-
 class Environment(StrEnum):
     DEVELOPMENT = "development"
     TESTING = "testing"
     PRODUCTION = "production"
 
-
 class LogFormat(StrEnum):
     CONSOLE = "console"
     JSON = "json"
-
 
 class LogLevel(StrEnum):
     DEBUG = "DEBUG"
@@ -44,16 +41,13 @@ class LogLevel(StrEnum):
     ERROR = "ERROR"
     CRITICAL = "CRITICAL"
 
-
 class EmbeddingProvider(StrEnum):
     SENTENCE_TRANSFORMERS = "sentence_transformers"
     OPENAI = "openai"
 
-
 class RerankerProvider(StrEnum):
     SENTENCE_TRANSFORMERS = "sentence_transformers"
     COHERE = "cohere"
-
 
 class LLMProvider(StrEnum):
     OLLAMA = "ollama"
@@ -61,16 +55,13 @@ class LLMProvider(StrEnum):
     GEMINI = "gemini"
     ANTHROPIC = "anthropic"
 
-
 # ─── Sub-configs ───────────────────────────────────────────────────────────
-
 
 class LoggingConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SIP_LOG_", extra="ignore")
 
     level: LogLevel = LogLevel.INFO
     format: LogFormat = LogFormat.CONSOLE
-
 
 class PostgresConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SIP_POSTGRES_", extra="ignore")
@@ -87,7 +78,6 @@ class PostgresConfig(BaseSettings):
         pw = self.password.get_secret_value()
         return f"postgresql+asyncpg://{self.user}:{pw}@{self.host}:{self.port}/{self.db}"
 
-
 class QdrantConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SIP_QDRANT_", extra="ignore")
 
@@ -95,12 +85,10 @@ class QdrantConfig(BaseSettings):
     port: int = 6333
     api_key: SecretStr | None = None
 
-
 class RedisConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SIP_REDIS_", extra="ignore")
 
     url: str = "redis://localhost:6379/0"
-
 
 class EmbeddingConfig(BaseSettings):
     """Embedding model configuration.
@@ -126,7 +114,6 @@ class EmbeddingConfig(BaseSettings):
             raise ValueError("embedding dimension must be a positive integer")
         return v
 
-
 class RerankerConfig(BaseSettings):
     """Cross-encoder / reranker configuration.
 
@@ -138,7 +125,6 @@ class RerankerConfig(BaseSettings):
     provider: RerankerProvider = RerankerProvider.SENTENCE_TRANSFORMERS
     model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
     model_version: str = "1"
-
 
 class LLMConfig(BaseSettings):
     """LLM provider and model configuration.
@@ -171,9 +157,7 @@ class LLMConfig(BaseSettings):
         populate_by_name=True,
     )
 
-
 # ─── Root settings ─────────────────────────────────────────────────────────
-
 
 class Settings(BaseSettings):
     """Root SIP settings object.
@@ -214,9 +198,7 @@ class Settings(BaseSettings):
     def is_production(self) -> bool:
         return self.env == Environment.PRODUCTION
 
-
 # ─── Singleton accessor ────────────────────────────────────────────────────
-
 
 @functools.lru_cache(maxsize=1)
 def get_settings() -> Settings:

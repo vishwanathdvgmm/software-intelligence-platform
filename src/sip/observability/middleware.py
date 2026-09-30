@@ -25,7 +25,6 @@ logger = get_logger(__name__)
 
 _REQUEST_ID_HEADER = "X-Request-Id"
 
-
 class ObservabilityMiddleware(BaseHTTPMiddleware):
     """FastAPI middleware for per-request observability."""
 

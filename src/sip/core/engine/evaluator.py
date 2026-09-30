@@ -7,7 +7,6 @@ from sip.core.contracts.rag import (
     Query,
 )
 
-
 class EvidenceEvaluator:
     """Evaluates whether retrieved evidence is sufficient for generation."""
 

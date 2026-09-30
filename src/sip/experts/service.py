@@ -30,7 +30,6 @@ from sip.core.protocols.repositories import ExpertRepository, ExpertVersionRepos
 
 logger = logging.getLogger(__name__)
 
-
 class ExpertLifecycleService:
     """Manages the full Expert lifecycle.
 

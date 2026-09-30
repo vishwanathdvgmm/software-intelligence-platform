@@ -8,7 +8,6 @@ from qdrant_client.http import models as rest
 from sip.core.contracts.knowledge import KnowledgeRecord
 from sip.core.protocols.retrieval import SemanticRetriever
 
-
 class QdrantSemanticRetriever(SemanticRetriever):
     """Retrieves semantic chunks from Qdrant.
 
@@ -96,16 +95,23 @@ class QdrantSemanticRetriever(SemanticRetriever):
                 continue
 
             try:
+                import json
                 if isinstance(record_json, str):
-                    # It might be a stringified JSON
-                    record = KnowledgeRecord.model_validate_json(record_json)
+                    raw_dict = json.loads(record_json)
                 else:
-                    # It might be a parsed dict
-                    record = KnowledgeRecord.model_validate(record_json)
-
+                    raw_dict = record_json
+                    
+                from sip.core.contracts.knowledge import Chunk, Document, DocumentVersion, Source, Software
+                record = KnowledgeRecord.model_construct(
+                    chunk=Chunk.model_construct(**raw_dict.get("chunk", {})),
+                    document=Document.model_construct(**raw_dict.get("document", {})),
+                    document_version=DocumentVersion.model_construct(**raw_dict.get("document_version", {})),
+                    source=Source.model_construct(**raw_dict.get("source", {})),
+                    software=Software.model_construct(**raw_dict.get("software", {})),
+                )
                 records.append((record, scored_point.score))
-            except Exception:
-                # Log parsing error in a real system
-                pass
+            except Exception as e:
+                import structlog
+                structlog.get_logger(__name__).error("failed_to_parse_record", error=str(e), record_json=record_json[:200])
 
         return records

@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from uuid import UUID, uuid4
+from typing import Any
 
 from sqlalchemy import (
     Boolean,
@@ -14,18 +15,16 @@ from sqlalchemy import (
     Table,
     Text,
 )
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from sip.core.contracts.knowledge import AuthorityLevel, ChunkType, DocumentType, SourceType
 
-
 class Base(DeclarativeBase):
     """Base for all SQLAlchemy models."""
 
     pass
-
 
 class SoftwareModel(Base):
     __tablename__ = "software"
@@ -39,7 +38,6 @@ class SoftwareModel(Base):
 
     versions: Mapped[list["SoftwareVersionModel"]] = relationship(back_populates="software")
     sources: Mapped[list["SourceModel"]] = relationship(back_populates="software")
-
 
 class SoftwareVersionModel(Base):
     __tablename__ = "software_versions"
@@ -56,7 +54,6 @@ class SoftwareVersionModel(Base):
 
     software: Mapped["SoftwareModel"] = relationship(back_populates="versions")
 
-
 # Association table for Source to SoftwareVersion
 source_version_assoc = Table(
     "source_software_versions",
@@ -69,7 +66,6 @@ source_version_assoc = Table(
         primary_key=True,
     ),
 )
-
 
 class SourceModel(Base):
     __tablename__ = "sources"
@@ -91,7 +87,6 @@ class SourceModel(Base):
     versions: Mapped[list["SoftwareVersionModel"]] = relationship(secondary=source_version_assoc)
     documents: Mapped[list["DocumentModel"]] = relationship(back_populates="source")
 
-
 class DocumentModel(Base):
     __tablename__ = "documents"
 
@@ -109,7 +104,6 @@ class DocumentModel(Base):
     source: Mapped["SourceModel"] = relationship(back_populates="documents")
     versions: Mapped[list["DocumentVersionModel"]] = relationship(back_populates="document")
 
-
 class DocumentVersionModel(Base):
     __tablename__ = "document_versions"
 
@@ -126,7 +120,6 @@ class DocumentVersionModel(Base):
     sections: Mapped[list["SectionModel"]] = relationship(back_populates="document_version")
     chunks: Mapped[list["ChunkModel"]] = relationship(back_populates="document_version")
 
-
 class SectionModel(Base):
     __tablename__ = "sections"
 
@@ -141,7 +134,6 @@ class SectionModel(Base):
 
     document_version: Mapped["DocumentVersionModel"] = relationship(back_populates="sections")
 
-
 # Association table for Chunk to SoftwareVersion
 chunk_version_assoc = Table(
     "chunk_software_versions",
@@ -154,7 +146,6 @@ chunk_version_assoc = Table(
         primary_key=True,
     ),
 )
-
 
 class ChunkModel(Base):
     __tablename__ = "chunks"
@@ -181,3 +172,28 @@ class ChunkModel(Base):
     software_versions: Mapped[list["SoftwareVersionModel"]] = relationship(
         secondary=chunk_version_assoc
     )
+
+class ExpertModel(Base):
+    __tablename__ = "experts"
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    slug: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    description: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
+    config: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    config_version: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    activated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+class ExpertVersionModel(Base):
+    __tablename__ = "expert_versions"
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    expert_id: Mapped[UUID] = mapped_column(ForeignKey("experts.id"), nullable=False)
+    version_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    config_snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    change_reason: Mapped[str] = mapped_column(String, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_by: Mapped[str] = mapped_column(String, default="system")

@@ -33,7 +33,6 @@ from sip.core.contracts import (
     ToolPermission,
 )
 
-
 class TestBaseModel:
     def test_immutability(self) -> None:
         software = Software(name="Docker", slug="docker")
@@ -46,7 +45,6 @@ class TestBaseModel:
         assert isinstance(data["id"], str)
         assert data["name"] == "Docker"
         assert isinstance(data["created_at"], str)
-
 
 class TestKnowledgeContracts:
     def test_software_slug_lowercase(self) -> None:
@@ -108,7 +106,6 @@ class TestKnowledgeContracts:
         )
         assert record.chunk.id == chunk.id
 
-
 class TestRAGContracts:
     def test_retrieval_version_snapshot(self) -> None:
         snapshot = RetrievalVersionSnapshot(
@@ -166,7 +163,6 @@ class TestRAGContracts:
                 rank=1,
             )
 
-
 class TestExpertContracts:
     def test_expert_slug_lowercase(self) -> None:
         expert = Expert(name="Docker Expert", slug="Docker-Expert")
@@ -183,7 +179,6 @@ class TestExpertContracts:
         assert draft.is_queryable() is False
         assert active.is_queryable() is True
 
-
 class TestLLMContracts:
     def test_llm_request(self) -> None:
         profile = ModelProfile(
@@ -195,7 +190,6 @@ class TestLLMContracts:
         req = LLMRequest(model_profile=profile, messages=(msg,))
         assert req.temperature == 0.1
         assert req.max_output_tokens == 2048
-
 
 class TestToolContracts:
     def test_tool_permissions(self) -> None:

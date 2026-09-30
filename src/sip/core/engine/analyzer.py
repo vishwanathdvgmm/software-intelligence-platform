@@ -2,7 +2,6 @@
 
 from sip.core.contracts.rag import Query, QueryAnalysis, QueryComplexity, QueryType
 
-
 class QueryAnalyzer:
     """Analyzes a query to extract entities, intent, and complexity.
 
@@ -46,7 +45,6 @@ class QueryAnalyzer:
             requires_multi_hop=(query_type == QueryType.COMPARISON),
             sub_questions=(),
         )
-
 
 class QueryTransformer:
     """Transforms, rewrites, and decomposes queries."""

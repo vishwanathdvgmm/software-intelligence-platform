@@ -24,7 +24,6 @@ from sip.core.protocols.llm import LLMProviderAdapter
 from sip.llm.gateway import CentralLLMGateway
 from sip.tools.registry import ToolRegistryManager
 
-
 # ─── Mock LLM Provider Adapter ──────────────────────────────────────────────
 
 class MockEchoAdapter(LLMProviderAdapter):
@@ -78,9 +77,7 @@ class MockSearchExecutor:
             ]
         }
 
-
 # ─── Interactive test ────────────────────────────────────────────────────────
-
 
 async def main() -> None:
     print("=" * 60)
@@ -182,7 +179,6 @@ async def main() -> None:
     print("\n" + "=" * 60)
     print("All Execution layer tests passed! [OK]")
     print("=" * 60)
-
 
 if __name__ == "__main__":
     asyncio.run(main())

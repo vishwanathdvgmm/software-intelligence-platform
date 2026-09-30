@@ -14,7 +14,6 @@ from sip.core.config import (
     get_settings,
 )
 
-
 class TestDefaultSettings:
     def test_default_env_is_development_in_tests(self) -> None:
         # conftest.py sets SIP_ENV=testing
@@ -57,7 +56,6 @@ class TestDefaultSettings:
         settings = get_settings()
         assert settings.logging.format == LogFormat.CONSOLE
 
-
 class TestEnvVarOverrides:
     def test_override_environment(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("SIP_ENV", "production")
@@ -92,7 +90,6 @@ class TestEnvVarOverrides:
         assert settings.reranker.provider == RerankerProvider.COHERE
         assert settings.reranker.model == "rerank-multilingual-v3.0"
 
-
 class TestPostgresDSN:
     def test_dsn_format(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("SIP_POSTGRES_HOST", "db-host")
@@ -117,7 +114,6 @@ class TestPostgresDSN:
         assert "changeme" not in repr_str
         assert "**" in repr_str
 
-
 class TestEmbeddingDimensionValidation:
     def test_invalid_dimension_zero(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("SIP_EMBEDDING_DIMENSION", "0")
@@ -131,7 +127,6 @@ class TestEmbeddingDimensionValidation:
         with pytest.raises(ValueError, match="positive"):
             get_settings()
 
-
 class TestModelVersionTracking:
     """Verify model version fields exist for retrieval reproducibility."""
 
@@ -144,7 +139,6 @@ class TestModelVersionTracking:
         settings = get_settings()
         assert settings.reranker.model_version
         assert isinstance(settings.reranker.model_version, str)
-
 
 class TestSettingsSingleton:
     def test_get_settings_returns_same_instance(self) -> None:

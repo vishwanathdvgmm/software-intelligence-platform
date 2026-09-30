@@ -23,7 +23,6 @@ from sip.core.protocols.tools import ToolExecutor
 
 logger = logging.getLogger(__name__)
 
-
 class ToolRegistryManager:
     """Central registry and execution engine for tools."""
 

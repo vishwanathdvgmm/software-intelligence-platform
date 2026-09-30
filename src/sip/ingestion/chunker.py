@@ -6,7 +6,6 @@ from uuid import uuid4
 from sip.core.contracts import Chunk, Document, DocumentVersion, Source
 from sip.core.protocols.ingestion import Chunker
 
-
 class MarkdownChunker(Chunker):
     """Splits markdown/text into chunks based on headers or paragraphs."""
 

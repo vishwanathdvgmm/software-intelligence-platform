@@ -28,7 +28,6 @@ from sip.core.contracts.knowledge import KnowledgeRecord
 
 # ─── Enumerations ──────────────────────────────────────────────────────────
 
-
 class QueryType(StrEnum):
     """Semantic type of a user query."""
 
@@ -40,7 +39,6 @@ class QueryType(StrEnum):
     MULTI_HOP = "multi_hop"
     EXPLORATORY = "exploratory"
 
-
 class QueryComplexity(StrEnum):
     """Estimated complexity of a query."""
 
@@ -48,14 +46,12 @@ class QueryComplexity(StrEnum):
     MODERATE = "moderate"
     COMPLEX = "complex"
 
-
 class RetrievalStrategy(StrEnum):
     """Which retrieval paths the planner selected."""
 
     SEMANTIC = "semantic"
     LEXICAL = "lexical"
     HYBRID = "hybrid"
-
 
 class EvidenceSufficiency(StrEnum):
     """Outcome of the Evidence Gate evaluation.
@@ -75,9 +71,7 @@ class EvidenceSufficiency(StrEnum):
     STALE = "stale"
     VERSION_MISMATCH = "version_mismatch"
 
-
 # ─── Retrieval reproducibility ─────────────────────────────────────────────
-
 
 class RetrievalVersionSnapshot(SIPBaseModel):
     """Snapshot of all component versions at retrieval time.
@@ -114,9 +108,7 @@ class RetrievalVersionSnapshot(SIPBaseModel):
 
     captured_at: datetime = Field(default_factory=utc_now)
 
-
 # ─── Query pipeline ─────────────────────────────────────────────────────────
-
 
 class Query(SIPBaseModel):
     """Raw user query entering the RAG pipeline."""
@@ -129,7 +121,6 @@ class Query(SIPBaseModel):
     # Explicit version filter from the user (e.g. "docker 25.0")
     requested_version: str | None = None
     created_at: datetime = Field(default_factory=utc_now)
-
 
 class QueryAnalysis(SIPBaseModel):
     """Output of the QueryAnalyzer stage.
@@ -148,7 +139,6 @@ class QueryAnalysis(SIPBaseModel):
     requires_multi_hop: bool = False
     # Sub-questions decomposed from the original (for multi-hop)
     sub_questions: tuple[str, ...] = Field(default_factory=tuple)
-
 
 class RetrievalPlan(SIPBaseModel):
     """Output of the RetrievalPlanner stage.
@@ -171,7 +161,6 @@ class RetrievalPlan(SIPBaseModel):
     # Full version snapshot — enables exact reproduction of this retrieval
     version_snapshot: RetrievalVersionSnapshot
 
-
 class RetrievalCandidate(SIPBaseModel):
     """A single candidate result from one retrieval source (semantic or lexical).
 
@@ -186,7 +175,6 @@ class RetrievalCandidate(SIPBaseModel):
     retriever: str  # e.g. "semantic", "bm25s"
     # Rank within the retriever's result set (1-indexed)
     rank: int = Field(..., ge=1)
-
 
 class RetrievalResult(SIPBaseModel):
     """Output of RRF Fusion + Deduplication.
@@ -203,7 +191,6 @@ class RetrievalResult(SIPBaseModel):
     duplicates_removed: int = 0
     fusion_latency_ms: float | None = None
 
-
 class Evidence(SIPBaseModel):
     """A single piece of evidence after Cross-Encoder reranking.
 
@@ -219,7 +206,6 @@ class Evidence(SIPBaseModel):
     rank: int = Field(..., ge=1)
     # RRF fused score (carried forward for transparency)
     fusion_score: float | None = None
-
 
 class EvidenceSufficiencyAssessment(SIPBaseModel):
     """Output of the EvidenceEvaluator (Evidence Gate).
@@ -240,7 +226,6 @@ class EvidenceSufficiencyAssessment(SIPBaseModel):
     should_retry: bool = False
     # Suggested reformulation for retry (if applicable)
     reformulated_query: str | None = None
-
 
 class Context(SIPBaseModel):
     """Final optimized context delivered to the LLM.

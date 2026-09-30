@@ -10,7 +10,6 @@ from uuid import UUID
 
 from sip.core.contracts import Chunk, KnowledgeRecord
 
-
 class SemanticRetriever(Protocol):
     """Protocol for semantic vector retrieval (e.g. Qdrant)."""
 
@@ -34,7 +33,6 @@ class SemanticRetriever(Protocol):
         """
         ...
 
-
 class LexicalRetriever(Protocol):
     """Protocol for lexical keyword retrieval (e.g. BM25S)."""
 
@@ -57,7 +55,6 @@ class LexicalRetriever(Protocol):
             List of (KnowledgeRecord, bm25_score) tuples, sorted by score descending.
         """
         ...
-
 
 class ChunkRepository(Protocol):
     """Protocol for retrieving chunks by ID (used for deduplication/hydration)."""

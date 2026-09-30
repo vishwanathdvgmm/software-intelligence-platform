@@ -9,7 +9,6 @@ from typing import Protocol
 
 from sip.core.contracts.llm import LLMRequest, LLMResponse
 
-
 class LLMProviderAdapter(Protocol):
     """Protocol for a specific LLM provider implementation.
 
@@ -24,7 +23,6 @@ class LLMProviderAdapter(Protocol):
     def stream(self, request: LLMRequest) -> AsyncGenerator[LLMResponse, None]:
         """Stream a response from the provider as a sequence of partial LLMResponses."""
         ...
-
 
 class LLMGateway(Protocol):
     """Protocol for the central LLM Gateway.

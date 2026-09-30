@@ -46,7 +46,6 @@ from sip.core.errors import (
     VectorStoreError,
 )
 
-
 class TestSIPError:
     def test_is_exception(self) -> None:
         err = SIPError("test message")
@@ -71,7 +70,6 @@ class TestSIPError:
     def test_no_cause_by_default(self) -> None:
         err = SIPError("no cause")
         assert err.cause is None
-
 
 class TestHierarchy:
     """Verify the inheritance hierarchy is correct."""
@@ -145,7 +143,6 @@ class TestHierarchy:
         for err in errors:
             assert isinstance(err, SIPError), f"{type(err).__name__} is not an instance of SIPError"
 
-
 class TestSpecificErrors:
     def test_validation_error_field(self) -> None:
         err = ValidationError("bad value", field="query_text")
@@ -179,7 +176,6 @@ class TestSpecificErrors:
     def test_ingestion_error_source_url(self) -> None:
         err = FetchError("404", source_url="https://docs.docker.com/")
         assert err.source_url == "https://docs.docker.com/"
-
 
 class TestRaisable:
     """Verify all errors can be raised and caught correctly."""

@@ -45,7 +45,6 @@ from sip.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-
 class PipelineTracer:
     """Mutable builder for a single request's ``ExecutionTrace``.
 

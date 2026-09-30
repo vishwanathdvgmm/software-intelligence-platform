@@ -15,7 +15,6 @@ class EvaluationQuestion(SIPBaseModel):
     question_type: str
     difficulty: Optional[str] = "Medium"
 
-
 class EvaluationDataset(SIPBaseModel):
     id: UUID
     name: str

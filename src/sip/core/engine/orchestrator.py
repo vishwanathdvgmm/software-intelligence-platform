@@ -19,7 +19,6 @@ from sip.core.protocols.retrieval import LexicalRetriever, SemanticRetriever
 
 logger = structlog.get_logger(__name__)
 
-
 class AdaptiveRAGEngine:
     """Orchestrates the full Adaptive RAG pipeline."""
 
@@ -67,8 +66,10 @@ class AdaptiveRAGEngine:
         try:
             # Generate real embeddings if installed
             from sentence_transformers import SentenceTransformer
-            model = SentenceTransformer('all-MiniLM-L6-v2')
-            query_vector = model.encode(query.text).tolist()
+            if not hasattr(self, '_embedding_model'):
+                logger.info("Loading AI embedding model into memory for the first time... this may take 30-40s")
+                self._embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            query_vector = self._embedding_model.encode(query.text).tolist()
         except ImportError:
             pass
 

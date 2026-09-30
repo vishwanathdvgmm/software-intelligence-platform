@@ -15,7 +15,6 @@ from sip.core.logging import (
     unbind_request_context,
 )
 
-
 class TestConfigureLogging:
     def test_configure_is_idempotent(self) -> None:
         configure_logging(force=True)
@@ -30,7 +29,6 @@ class TestConfigureLogging:
         configure_logging(force=True)
         root = logging.getLogger()
         assert len(root.handlers) >= 1
-
 
 class TestGetLogger:
     def test_returns_bound_logger(self) -> None:
@@ -60,7 +58,6 @@ class TestGetLogger:
     def test_logger_can_emit_debug(self) -> None:
         logger = get_logger("sip.test.emit")
         logger.debug("test.debug", detail="verbose info")
-
 
 class TestContextVariables:
     def test_bind_and_clear(self) -> None:
@@ -98,7 +95,6 @@ class TestContextVariables:
         ctx = structlog.contextvars.get_contextvars()
         assert ctx["request_id"] == "r1"
         assert ctx["expert_id"] == "e1"
-
 
 class TestObservabilityContract:
     """Verify that the logging module supports the key SIP observability fields.

@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 
 from sip.core.protocols.ingestion import Parser, RawArtifact
 
-
 class HtmlParser(Parser):
     """Simple parser to extract text from HTML."""
 

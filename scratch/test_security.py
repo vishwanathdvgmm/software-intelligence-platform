@@ -18,7 +18,6 @@ from sip.security.input_validation import (
     validate_file_upload,
 )
 
-
 def run_tests() -> None:
     print("=" * 60)
     print("  SIP Security Architecture — Milestone 10 Test")
@@ -104,7 +103,6 @@ def run_tests() -> None:
     print("\n" + "=" * 60)
     print("  [OK] Security architecture verified!")
     print("=" * 60)
-
 
 if __name__ == "__main__":
     run_tests()

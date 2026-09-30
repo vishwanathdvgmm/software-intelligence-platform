@@ -28,7 +28,6 @@ from sip.core.contracts.rag import (
 
 # ─── Citation ───────────────────────────────────────────────────────────────
 
-
 class Citation(SIPBaseModel):
     """A verifiable link from an answer claim to its source.
 
@@ -55,9 +54,7 @@ class Citation(SIPBaseModel):
     # Reranker score of the evidence item
     relevance_score: float | None = None
 
-
 # ─── Execution trace ─────────────────────────────────────────────────────────
-
 
 class RetrievalTraceEntry(SIPBaseModel):
     """Per-retriever trace data within an ExecutionTrace."""
@@ -65,7 +62,6 @@ class RetrievalTraceEntry(SIPBaseModel):
     retriever: str  # "semantic" | "bm25s"
     candidates_returned: int
     latency_ms: float | None = None
-
 
 class ExecutionTrace(SIPBaseModel):
     """Full per-request trace of the SIP pipeline.
@@ -128,9 +124,7 @@ class ExecutionTrace(SIPBaseModel):
     error: str | None = None
     created_at: datetime = Field(default_factory=utc_now)
 
-
 # ─── Evaluation ─────────────────────────────────────────────────────────────
-
 
 class MetricValue(SIPBaseModel):
     """A single named metric with its value and optional metadata."""
@@ -150,13 +144,11 @@ class MetricValue(SIPBaseModel):
             return self.value >= self.threshold
         return self.value <= self.threshold
 
-
 class EvaluationSystem(StrEnum):
     """Which system is being evaluated."""
 
     SIP = "sip"
     BASELINE = "baseline"
-
 
 class EvaluationResult(SIPBaseModel):
     """Structured result from a single evaluation run.

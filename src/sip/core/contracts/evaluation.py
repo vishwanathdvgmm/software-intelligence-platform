@@ -12,7 +12,6 @@ class EvaluationTestCase:
     expected_sources: List[str] = field(default_factory=list)
     question_type: str = "factoid"
 
-
 @dataclass
 class EvaluationMetrics:
     # Retrieval
@@ -33,7 +32,6 @@ class EvaluationMetrics:
     latency_ms: float = 0.0
     total_tokens: int = 0
 
-
 @dataclass
 class EvaluationResult:
     test_case_id: str
@@ -43,4 +41,3 @@ class EvaluationResult:
     retrieved_chunks: List[Chunk] = field(default_factory=list)
     raw_response: Optional[LLMResponse] = None
     error: Optional[str] = None
-

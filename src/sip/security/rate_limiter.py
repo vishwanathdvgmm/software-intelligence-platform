@@ -15,13 +15,11 @@ from sip.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-
 @dataclass
 class RateLimitConfig:
     """Rate limit configuration."""
     requests: int = 100
     window_seconds: int = 60
-
 
 class RateLimiter:
     """Sliding window rate limiter (In-Memory).
@@ -75,7 +73,6 @@ class RateLimiter:
     def clear(self) -> None:
         """Clear all rate limit data."""
         self._windows.clear()
-
 
 # Global rate limiter instance
 _rate_limiter = RateLimiter()

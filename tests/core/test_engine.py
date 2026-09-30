@@ -18,7 +18,6 @@ from sip.core.contracts.rag import Query, RetrievalStrategy, RetrievalVersionSna
 from sip.core.engine.orchestrator import AdaptiveRAGEngine
 from sip.core.engine.retrievers import BM25SRetriever, MockSemanticRetriever
 
-
 @pytest.fixture
 def mock_knowledge() -> list[KnowledgeRecord]:
     """Create some mock knowledge records."""
@@ -57,7 +56,6 @@ def mock_knowledge() -> list[KnowledgeRecord]:
         )
         records.append(record)
     return records
-
 
 @pytest.mark.asyncio
 async def test_adaptive_rag_engine_end_to_end(mock_knowledge: list[KnowledgeRecord]) -> None:

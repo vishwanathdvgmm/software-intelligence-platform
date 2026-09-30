@@ -26,9 +26,7 @@ from sip.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-
 # ─── Roles (§10.7) ─────────────────────────────────────────────────────────
-
 
 class Role(StrEnum):
     """RBAC roles as defined in Phase 10 §10.7."""
@@ -39,7 +37,6 @@ class Role(StrEnum):
     ANALYST = "analyst"
     VIEWER = "viewer"
 
-
 # Role hierarchy: higher roles include permissions of lower ones
 _ROLE_HIERARCHY: dict[Role, int] = {
     Role.VIEWER: 0,
@@ -49,7 +46,6 @@ _ROLE_HIERARCHY: dict[Role, int] = {
     Role.ADMIN: 4,
 }
 
-
 class AuthResult(BaseModel):
     """Result of an authentication attempt."""
 
@@ -57,7 +53,6 @@ class AuthResult(BaseModel):
     user_id: str = ""
     role: Role = Role.VIEWER
     error: str | None = None
-
 
 class APIKeyAuth:
     """API key authentication provider.
@@ -112,11 +107,9 @@ class APIKeyAuth:
         """Check if a role meets the minimum required role level."""
         return _ROLE_HIERARCHY.get(role, -1) >= _ROLE_HIERARCHY.get(required_role, 99)
 
-
 # ─── Module-level convenience ──────────────────────────────────────────────
 
 _auth: APIKeyAuth | None = None
-
 
 def get_auth() -> APIKeyAuth:
     """Return the global API key auth provider (lazy singleton)."""
@@ -128,7 +121,6 @@ def get_auth() -> APIKeyAuth:
         if dev_key:
             _auth.register_key(dev_key, user_id="dev-user", role=Role.ADMIN)
     return _auth
-
 
 def verify_api_key(key: str) -> AuthResult:
     """Convenience wrapper for API key verification."""

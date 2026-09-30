@@ -7,7 +7,6 @@ from typing import Protocol
 
 from sip.core.contracts.tools import Tool, ToolCall, ToolResult
 
-
 class ToolExecutor(Protocol):
     """Protocol for an individual tool's executor implementation.
 
@@ -29,7 +28,6 @@ class ToolExecutor(Protocol):
                 and translate it to a ToolStatus.FAILURE ToolResult.
         """
         ...
-
 
 class ToolRegistry(Protocol):
     """Protocol for the central Tool Registry.

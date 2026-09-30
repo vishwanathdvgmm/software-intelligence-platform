@@ -12,16 +12,13 @@ from sip.core.logging import clear_request_context, configure_logging
 
 # ─── Session-level setup ───────────────────────────────────────────────────
 
-
 def pytest_configure(config: pytest.Config) -> None:
     """Set the environment to testing before any test runs."""
     os.environ.setdefault("SIP_ENV", "testing")
     os.environ.setdefault("SIP_LOG_FORMAT", "console")
     os.environ.setdefault("SIP_LOG_LEVEL", "DEBUG")
 
-
 # ─── Fixtures ──────────────────────────────────────────────────────────────
-
 
 @pytest.fixture(autouse=True)
 def reset_settings_cache() -> Generator[None, None, None]:
@@ -34,14 +31,12 @@ def reset_settings_cache() -> Generator[None, None, None]:
     yield
     get_settings.cache_clear()
 
-
 @pytest.fixture(autouse=True)
 def reset_logging_context() -> Generator[None, None, None]:
     """Clear structlog context variables between tests."""
     clear_request_context()
     yield
     clear_request_context()
-
 
 @pytest.fixture(scope="session", autouse=True)
 def configure_test_logging() -> None:
