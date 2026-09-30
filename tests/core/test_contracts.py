@@ -18,6 +18,7 @@ from sip.core.contracts import (
     ExpertConfig,
     ExpertStatus,
     KnowledgeRecord,
+    LLMProvider,
     LLMRequest,
     Message,
     MessageRole,
@@ -37,7 +38,7 @@ class TestBaseModel:
     def test_immutability(self) -> None:
         software = Software(name="Docker", slug="docker")
         with pytest.raises(ValidationError, match="Instance is frozen"):
-            software.name = "Docker Edited"  # type: ignore[misc]
+            software.name = "Docker Edited"
 
     def test_json_serialization(self) -> None:
         software = Software(name="Docker", slug="docker", description="A platform")
@@ -186,7 +187,7 @@ class TestExpertContracts:
 class TestLLMContracts:
     def test_llm_request(self) -> None:
         profile = ModelProfile(
-            provider="ollama",
+            provider=LLMProvider.OLLAMA,
             model_id="qwen",
             context_window=8192,
         )

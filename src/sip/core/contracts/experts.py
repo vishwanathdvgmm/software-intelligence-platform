@@ -72,10 +72,10 @@ EXPERT_VALID_TRANSITIONS: dict[ExpertStatus, frozenset[ExpertStatus]] = {
 class VersionPolicy(StrEnum):
     """How the Expert handles software version scope."""
 
-    LATEST_ONLY = "latest_only"       # Only retrieve from the latest version
-    PINNED = "pinned"                 # Retrieve from a specific pinned version
-    RANGE = "range"                   # Retrieve from a version range
-    ALL_VERSIONS = "all_versions"     # Retrieve across all versions (with metadata)
+    LATEST_ONLY = "latest_only"  # Only retrieve from the latest version
+    PINNED = "pinned"  # Retrieve from a specific pinned version
+    RANGE = "range"  # Retrieve from a version range
+    ALL_VERSIONS = "all_versions"  # Retrieve across all versions (with metadata)
 
 
 # ─── Expert sub-configs ─────────────────────────────────────────────────────

@@ -62,9 +62,7 @@ class LexicalRetriever(Protocol):
 class ChunkRepository(Protocol):
     """Protocol for retrieving chunks by ID (used for deduplication/hydration)."""
 
-    async def get_by_ids(
-        self, chunk_ids: list[UUID]
-    ) -> dict[UUID, Chunk]:
+    async def get_by_ids(self, chunk_ids: list[UUID]) -> dict[UUID, Chunk]:
         """Fetch chunks by their IDs.
 
         Returns:
@@ -72,9 +70,7 @@ class ChunkRepository(Protocol):
         """
         ...
 
-    async def get_records_by_chunk_ids(
-        self, chunk_ids: list[UUID]
-    ) -> dict[UUID, KnowledgeRecord]:
+    async def get_records_by_chunk_ids(self, chunk_ids: list[UUID]) -> dict[UUID, KnowledgeRecord]:
         """Fetch full KnowledgeRecords for the given chunk IDs.
 
         Returns:

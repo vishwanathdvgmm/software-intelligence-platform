@@ -1,0 +1,68 @@
+# Phase 10 §10.43 - Docker Architecture
+# Production-ready compose configuration with API, Qdrant, and PostgreSQL
+# Includes the pre-existing Qdrant and Postgres configuration but adds the API service
+# and secures the network.
+
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sip-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SIP_ENV=production
+      - SIP_LOG_FORMAT=json
+      - SIP_API_KEY=${SIP_API_KEY:-dev_key} # Overridden by real secrets in production
+      - SIP_POSTGRES_HOST=postgres
+      - SIP_POSTGRES_USER=sip
+      - SIP_POSTGRES_PASSWORD=${SIP_POSTGRES_PASSWORD:-sip}
+      - SIP_QDRANT_HOST=qdrant
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    networks:
+      - sip_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: sip-postgres
+    environment:
+      POSTGRES_USER: sip
+      POSTGRES_PASSWORD: ${SIP_POSTGRES_PASSWORD:-sip}
+      POSTGRES_DB: sip
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sip"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sip_network
+
+  qdrant:
+    image: qdrant/qdrant:v1.11.2
+    container_name: sip-qdrant
+    ports:
+      - "6333:6333" # HTTP
+      - "6334:6334" # gRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - sip_network
+
+volumes:
+  postgres_data:
+  qdrant_data:
+
+networks:
+  sip_network:
+    driver: bridge

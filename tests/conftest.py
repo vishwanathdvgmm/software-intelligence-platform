@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Generator
 
 import pytest
 
@@ -23,22 +24,22 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.fixture(autouse=True)
-def reset_settings_cache() -> None:  # type: ignore[return]
+def reset_settings_cache() -> Generator[None, None, None]:
     """Clear the settings singleton cache before each test.
 
     This ensures that env-var overrides applied inside a test (via
     ``monkeypatch.setenv``) result in a fresh Settings read.
     """
     get_settings.cache_clear()
-    yield  # type: ignore[misc]
+    yield
     get_settings.cache_clear()
 
 
 @pytest.fixture(autouse=True)
-def reset_logging_context() -> None:  # type: ignore[return]
+def reset_logging_context() -> Generator[None, None, None]:
     """Clear structlog context variables between tests."""
     clear_request_context()
-    yield  # type: ignore[misc]
+    yield
     clear_request_context()
 
 

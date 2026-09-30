@@ -29,13 +29,13 @@ class ToolPermission(StrEnum):
     A tool that requires a permission not held by the context is rejected.
     """
 
-    KNOWLEDGE_READ = "knowledge_read"       # Read chunks/documents from the store
-    KNOWLEDGE_WRITE = "knowledge_write"     # Trigger ingestion or modify sources
-    EXPERT_READ = "expert_read"             # Read expert config
-    EXPERT_WRITE = "expert_write"           # Modify expert config/status
-    LLM_CALL = "llm_call"                   # Make an LLM request
-    NETWORK_READ = "network_read"           # HTTP GET to allowlisted URLs
-    SYSTEM_READ = "system_read"             # Read system metrics/health
+    KNOWLEDGE_READ = "knowledge_read"  # Read chunks/documents from the store
+    KNOWLEDGE_WRITE = "knowledge_write"  # Trigger ingestion or modify sources
+    EXPERT_READ = "expert_read"  # Read expert config
+    EXPERT_WRITE = "expert_write"  # Modify expert config/status
+    LLM_CALL = "llm_call"  # Make an LLM request
+    NETWORK_READ = "network_read"  # HTTP GET to allowlisted URLs
+    SYSTEM_READ = "system_read"  # Read system metrics/health
 
 
 class ToolStatus(StrEnum):
@@ -77,9 +77,7 @@ class Tool(SIPBaseModel):
     # JSON Schema for the output
     output_schema: dict[str, object] = Field(default_factory=dict)
     # Required permissions for this tool
-    required_permissions: frozenset[ToolPermission] = Field(
-        default_factory=frozenset
-    )
+    required_permissions: frozenset[ToolPermission] = Field(default_factory=frozenset)
     is_active: bool = True
 
 

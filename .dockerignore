@@ -1,0 +1,9 @@
+.git
+.venv
+ui/node_modules
+ui/src-tauri/target
+__pycache__
+*.pyc
+scratch
+tests
+docs

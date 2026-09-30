@@ -51,8 +51,8 @@ class AuthorityLevel(StrEnum):
     Used to weight retrieval results and guide evidence evaluation.
     """
 
-    OFFICIAL = "official"        # e.g. docs.docker.com — highest trust
-    COMMUNITY = "community"      # e.g. Stack Overflow answers — medium trust
+    OFFICIAL = "official"  # e.g. docs.docker.com — highest trust
+    COMMUNITY = "community"  # e.g. Stack Overflow answers — medium trust
     AUTO_GENERATED = "auto_generated"  # e.g. generated reference — lower trust
 
     @property

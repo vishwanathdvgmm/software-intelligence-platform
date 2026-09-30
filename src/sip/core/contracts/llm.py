@@ -42,11 +42,11 @@ class LLMProvider(StrEnum):
 class FinishReason(StrEnum):
     """Why the LLM stopped generating."""
 
-    STOP = "stop"             # Natural end of response
-    LENGTH = "length"         # Hit max_tokens limit
-    TOOL_CALL = "tool_call"   # Model wants to call a tool
+    STOP = "stop"  # Natural end of response
+    LENGTH = "length"  # Hit max_tokens limit
+    TOOL_CALL = "tool_call"  # Model wants to call a tool
     CONTENT_FILTER = "content_filter"  # Blocked by safety filter
-    ERROR = "error"           # Provider error
+    ERROR = "error"  # Provider error
 
 
 # ─── Message and request/response ─────────────────────────────────────────
