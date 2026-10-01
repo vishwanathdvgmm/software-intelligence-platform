@@ -29,6 +29,7 @@ PUBLIC_ENDPOINTS = {
     "/api/metrics",
     "/api/chat",
     "/api/knowledge/stats",
+    "/api/experts",
 }
 
 class SecurityMiddleware(BaseHTTPMiddleware):

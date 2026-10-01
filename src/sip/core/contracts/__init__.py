@@ -13,8 +13,16 @@ Sub-modules:
     llm         — LLMRequest, LLMResponse, ModelProfile, TokenUsage
     tools       — Tool, ToolResult, ToolPermission, AgentExecution
     output      — Citation, ExecutionTrace, EvaluationResult
+    api         — PlatformAPIResponse, StreamingEvent, APIError, HealthStatus
 """
 
+from sip.core.contracts.api import (
+    APIError,
+    APIErrorDetail,
+    HealthStatus,
+    PlatformAPIResponse,
+    StreamingEvent,
+)
 from sip.core.contracts.base import SIPBaseModel, new_uuid, utc_now
 from sip.core.contracts.experts import (
     EXPERT_VALID_TRANSITIONS,
@@ -86,6 +94,8 @@ from sip.core.contracts.tools import (
 )
 
 __all__ = [
+    "APIError",
+    "APIErrorDetail",
     "EXPERT_VALID_TRANSITIONS",
     "AgentExecution",
     "AgentStatus",
@@ -112,6 +122,7 @@ __all__ = [
     "ExpertVersion",
     "FinishReason",
     "GenerationConfig",
+    "HealthStatus",
     "IngestionStatus",
     "KnowledgeRecord",
     "LLMProvider",
@@ -127,6 +138,7 @@ __all__ = [
     "QueryAnalysis",
     "QueryComplexity",
     "QueryType",
+    "PlatformAPIResponse",
     "RetrievalCandidate",
     "RetrievalConfig",
     "RetrievalPlan",
@@ -142,6 +154,7 @@ __all__ = [
     "SoftwareVersion",
     "Source",
     "SourceType",
+    "StreamingEvent",
     "TokenUsage",
     "Tool",
     "ToolCall",

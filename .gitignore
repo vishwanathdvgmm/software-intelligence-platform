@@ -73,4 +73,6 @@ bm25s_indexes/
 alembic/versions/*.pyc
 
 
+docs/
 extras/
+scratch/

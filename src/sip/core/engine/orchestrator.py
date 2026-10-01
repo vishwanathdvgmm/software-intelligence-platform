@@ -1,132 +1,185 @@
 """Adaptive RAG Engine Orchestrator."""
 
+import asyncio
+import time
 import structlog
+from typing import Optional
 
 from sip.core.contracts.rag import (
     Context,
     EvidenceSufficiencyAssessment,
+    EvidenceSufficiency,
     Query,
     RetrievalStrategy,
     RetrievalVersionSnapshot,
+    RetrievalCandidate,
 )
-from sip.core.engine.analyzer import QueryAnalyzer, QueryTransformer
-from sip.core.engine.context import ContextOptimizer
-from sip.core.engine.evaluator import EvidenceEvaluator
-from sip.core.engine.fusion import RRFFusion
-from sip.core.engine.planner import RetrievalPlanner
-from sip.core.engine.reranker import CrossEncoderReranker
+
+from sip.core.protocols.rag import (
+    QueryAnalyzerProtocol,
+    RetrievalPlannerProtocol,
+    ResultFusionProtocol,
+    CandidateDeduplicatorProtocol,
+    RerankerProtocol,
+    ContextOptimizerProtocol,
+    EvidenceEvaluatorProtocol,
+    EvidenceGateProtocol,
+    MetadataFilterProtocol,
+)
+
 from sip.core.protocols.retrieval import LexicalRetriever, SemanticRetriever
 
 logger = structlog.get_logger(__name__)
 
 class AdaptiveRAGEngine:
-    """Orchestrates the full Adaptive RAG pipeline."""
+    """Orchestrates the full Adaptive RAG pipeline.
+    
+    Implements a bounded adaptive loop.
+    """
 
     def __init__(
         self,
+        analyzer: QueryAnalyzerProtocol,
+        planner: RetrievalPlannerProtocol,
         semantic_retriever: SemanticRetriever,
         lexical_retriever: LexicalRetriever,
-        version_snapshot: RetrievalVersionSnapshot,
+        metadata_filter: MetadataFilterProtocol,
+        fusion: ResultFusionProtocol,
+        deduplicator: CandidateDeduplicatorProtocol,
+        reranker: RerankerProtocol,
+        optimizer: ContextOptimizerProtocol,
+        evaluator: EvidenceEvaluatorProtocol,
+        gate: EvidenceGateProtocol,
+        max_iterations: int = 3,
+        timeout_seconds: float = 30.0,
     ) -> None:
-        """Initialize the pipeline components."""
+        self.analyzer = analyzer
+        self.planner = planner
         self.semantic_retriever = semantic_retriever
         self.lexical_retriever = lexical_retriever
-
-        # Initialize pipeline stages
-        self.analyzer = QueryAnalyzer()
-        self.transformer = QueryTransformer()
-        self.planner = RetrievalPlanner(version_snapshot)
-        self.fusion = RRFFusion()
-        self.reranker = CrossEncoderReranker(mock=True)  # Using mock for M2
-        self.optimizer = ContextOptimizer()
-        self.evaluator = EvidenceEvaluator()
+        self.metadata_filter = metadata_filter
+        self.fusion = fusion
+        self.deduplicator = deduplicator
+        self.reranker = reranker
+        self.optimizer = optimizer
+        self.evaluator = evaluator
+        self.gate = gate
+        self.max_iterations = max_iterations
+        self.timeout_seconds = timeout_seconds
 
     async def retrieve_context(self, query: Query) -> tuple[Context, EvidenceSufficiencyAssessment]:
-        """Execute the retrieval pipeline to produce an optimized context."""
+        """Execute the adaptive retrieval pipeline."""
+        try:
+            return await asyncio.wait_for(
+                self._adaptive_loop(query),
+                timeout=self.timeout_seconds
+            )
+        except asyncio.TimeoutError:
+            logger.warning("rag.pipeline.timeout", query_id=str(query.id))
+            raise RuntimeError("RAG Pipeline timed out")
+        except asyncio.CancelledError:
+            logger.warning("rag.pipeline.cancelled", query_id=str(query.id))
+            raise RuntimeError("RAG Pipeline was cancelled")
+
+    async def _adaptive_loop(self, query: Query) -> tuple[Context, EvidenceSufficiencyAssessment]:
         logger.info("rag.pipeline.start", query_id=str(query.id), expert_id=str(query.expert_id))
 
-        # 1. Analyze
+        # Query analysis happens once (immutable original query)
         analysis = await self.analyzer.analyze(query)
         logger.debug("rag.analyzed", query_type=analysis.query_type)
 
-        # 2. Plan
-        plan = await self.planner.plan(analysis)
-        logger.debug("rag.planned", strategy=plan.strategy)
+        iteration = 0
+        last_evidence_count = 0
+        
+        while iteration < self.max_iterations:
+            iteration += 1
+            logger.info("rag.iteration.start", iteration=iteration)
 
-        # 3. Retrieve
-        # In a real system, the QueryTransformer might generate sub-queries here,
-        # and we would retrieve for all of them concurrently.
+            # Generate Retrieval Plan (could adapt based on iteration state if the planner supported it)
+            plan = await self.planner.plan(analysis)
+            logger.debug("rag.planned", strategy=plan.strategy)
+            
+            # Apply Metadata Filter
+            version_filter = self.metadata_filter.build_filter(analysis)
+            
+            # Update plan with the generated filter
+            plan = plan.model_copy(update={"version_filter": version_filter})
 
-        from sip.core.contracts.rag import RetrievalCandidate
+            semantic_cands: list[RetrievalCandidate] = []
+            lexical_cands: list[RetrievalCandidate] = []
 
-        semantic_cands: list[RetrievalCandidate] = []
-        lexical_cands: list[RetrievalCandidate] = []
-
-        query_vector = [0.0] * 384
-        try:
-            # Generate real embeddings if installed
-            from sentence_transformers import SentenceTransformer
-            if not hasattr(self, '_embedding_model'):
-                logger.info("Loading AI embedding model into memory for the first time... this may take 30-40s")
-                self._embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-            query_vector = self._embedding_model.encode(query.text).tolist()
-        except ImportError:
-            pass
-
-        if plan.strategy in (RetrievalStrategy.SEMANTIC, RetrievalStrategy.HYBRID):
-            results = await self.semantic_retriever.search(
-                query_vector=query_vector,
-                expert_id=query.expert_id,
-                version_filter=plan.version_filter,
-                top_k=plan.semantic_top_k,
-            )
-            # Convert to candidates (note: we don't have chunk_id directly here,
-            # but we assume KnowledgeRecord has chunk_id via record.chunk.id)
-            from sip.core.contracts.rag import RetrievalCandidate
-
-            semantic_cands = [
-                RetrievalCandidate(
-                    chunk_id=rec.chunk.id,
-                    knowledge_record=rec,
-                    score=score,
-                    retriever="semantic",
-                    rank=i + 1,
+            # Execute Retrieval
+            if plan.strategy in (RetrievalStrategy.SEMANTIC, RetrievalStrategy.HYBRID):
+                results = await self.semantic_retriever.search(
+                    query_text=query.text,
+                    expert_id=query.expert_id,
+                    version_filter=plan.version_filter,
+                    top_k=plan.semantic_top_k,
                 )
-                for i, (rec, score) in enumerate(results)
-            ]
+                
+                semantic_cands = [
+                    RetrievalCandidate(
+                        chunk_id=rec.chunk.id,
+                        knowledge_record=rec,
+                        score=score,
+                        retriever="semantic",
+                        rank=i + 1,
+                    )
+                    for i, (rec, score) in enumerate(results)
+                ]
 
-        if plan.strategy in (RetrievalStrategy.LEXICAL, RetrievalStrategy.HYBRID):
-            results = await self.lexical_retriever.search(
-                query_text=query.text,
-                expert_id=query.expert_id,
-                version_filter=plan.version_filter,
-                top_k=plan.lexical_top_k,
-            )
-            lexical_cands = [
-                RetrievalCandidate(
-                    chunk_id=rec.chunk.id,
-                    knowledge_record=rec,
-                    score=score,
-                    retriever="bm25s",
-                    rank=i + 1,
+            if plan.strategy in (RetrievalStrategy.LEXICAL, RetrievalStrategy.HYBRID):
+                results = await self.lexical_retriever.search(
+                    query_text=query.text,
+                    expert_id=query.expert_id,
+                    version_filter=plan.version_filter,
+                    top_k=plan.lexical_top_k,
                 )
-                for i, (rec, score) in enumerate(results)
-            ]
+                lexical_cands = [
+                    RetrievalCandidate(
+                        chunk_id=rec.chunk.id,
+                        knowledge_record=rec,
+                        score=score,
+                        retriever="bm25s",
+                        rank=i + 1,
+                    )
+                    for i, (rec, score) in enumerate(results)
+                ]
 
-        # 4. Fuse & Deduplicate
-        result = await self.fusion.fuse(semantic_cands, lexical_cands, plan)
-        logger.debug("rag.fused", total_candidates=len(result.candidates))
+            # Fuse & Deduplicate
+            fused_result = await self.fusion.fuse(semantic_cands, lexical_cands, plan)
+            
+            dedup_cands = await self.deduplicator.deduplicate(list(fused_result.candidates))
+            fused_result = fused_result.model_copy(update={"candidates": tuple(dedup_cands)})
+            logger.debug("rag.fused", total_candidates=len(fused_result.candidates))
+            
+            # Rerank
+            evidence = await self.reranker.rerank(query, fused_result, plan)
+            logger.debug("rag.reranked", top_evidence=len(evidence))
 
-        # 5. Rerank
-        evidence = await self.reranker.rerank(query, result, plan)
-        logger.debug("rag.reranked", top_evidence=len(evidence))
+            # Optimize Context
+            context = await self.optimizer.optimize(query, evidence)
+            logger.info("rag.optimized", token_count=context.token_count)
 
-        # 6. Evaluate
-        assessment = await self.evaluator.evaluate(query, evidence)
-        logger.info("rag.evaluated", sufficiency=assessment.sufficiency)
+            # Evaluate Evidence
+            assessment = await self.evaluator.evaluate(query, evidence)
+            logger.info("rag.evaluated", sufficiency=assessment.sufficiency)
 
-        # 7. Optimize Context
-        context = await self.optimizer.optimize(query, evidence)
-        logger.info("rag.pipeline.complete", token_count=context.token_count)
-
-        return context, assessment
+            # Evidence Gate
+            is_sufficient = await self.gate.enforce(assessment)
+            
+            if is_sufficient:
+                logger.info("rag.pipeline.complete", token_count=context.token_count, iteration=iteration)
+                return context, assessment
+                
+            # No-progress check
+            if len(evidence) == last_evidence_count:
+                logger.warning("rag.no_progress", iteration=iteration)
+                # Terminate early due to no progress
+                break
+                
+            last_evidence_count = len(evidence)
+            
+        logger.warning("rag.pipeline.max_iterations_reached")
+        # Return best effort context and assessment
+        return context, assessment # type: ignore

@@ -15,7 +15,7 @@ class SemanticRetriever(Protocol):
 
     async def search(
         self,
-        query_vector: list[float],
+        query_text: str,
         expert_id: UUID,
         version_filter: dict[str, str | list[str]],
         top_k: int,
@@ -23,7 +23,7 @@ class SemanticRetriever(Protocol):
         """Search for semantically similar chunks.
 
         Args:
-            query_vector: The embedded query.
+            query_text: The query string to search for.
             expert_id: Scopes retrieval to sources associated with this Expert.
             version_filter: Explicit software version requirements.
             top_k: Maximum number of results to return.

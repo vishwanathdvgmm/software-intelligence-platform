@@ -1,4 +1,4 @@
-"""RRF Fusion and Deduplication."""
+"""RRF Fusion."""
 
 import time
 from uuid import UUID
@@ -14,23 +14,18 @@ class RRFFusion:
         lexical_candidates: list[RetrievalCandidate],
         plan: RetrievalPlan,
     ) -> RetrievalResult:
-        """Fuse candidates using RRF and deduplicate."""
+        """Fuse candidates using RRF."""
         start_time = time.perf_counter()
 
-        # Dictionary to accumulate RRF scores by chunk_id
-        # chunk_id -> (merged_candidate, rrf_score)
         fused: dict[UUID, tuple[RetrievalCandidate, float]] = {}
 
         def add_candidates(candidates: list[RetrievalCandidate]) -> None:
             for idx, candidate in enumerate(candidates):
-                # RRF score = 1 / (k + rank)
-                # We use idx + 1 as rank if candidate.rank is not set or to be safe
                 rank = candidate.rank if candidate.rank > 0 else idx + 1
                 score = 1.0 / (plan.rrf_k + rank)
 
                 if candidate.chunk_id in fused:
                     existing_cand, existing_score = fused[candidate.chunk_id]
-                    # Accumulate score
                     fused[candidate.chunk_id] = (existing_cand, existing_score + score)
                 else:
                     fused[candidate.chunk_id] = (candidate, score)
@@ -38,10 +33,8 @@ class RRFFusion:
         add_candidates(semantic_candidates)
         add_candidates(lexical_candidates)
 
-        # Sort by accumulated RRF score descending
         sorted_fused = sorted(fused.values(), key=lambda x: x[1], reverse=True)
 
-        # Rebuild candidates with updated scores and ranks
         final_candidates = []
         for i, (candidate, rrf_score) in enumerate(sorted_fused):
             final_candidates.append(
@@ -54,9 +47,6 @@ class RRFFusion:
                 )
             )
 
-        duplicates_removed = (len(semantic_candidates) + len(lexical_candidates)) - len(
-            final_candidates
-        )
         latency = (time.perf_counter() - start_time) * 1000
 
         return RetrievalResult(
@@ -64,6 +54,6 @@ class RRFFusion:
             candidates=tuple(final_candidates),
             semantic_count=len(semantic_candidates),
             lexical_count=len(lexical_candidates),
-            duplicates_removed=duplicates_removed,
+            duplicates_removed=0, # handled by deduplicator
             fusion_latency_ms=latency,
         )
